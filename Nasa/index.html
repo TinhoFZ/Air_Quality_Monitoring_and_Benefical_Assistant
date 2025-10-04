@@ -25,27 +25,58 @@
         <div id="map"></div>
       </div>
 
+      <div class="controls">
+        <div class="layer-control">
+          <h4>Layers</h4>
+          <label><input type="checkbox" id="pm25" checked> PM2.5</label>
+          <label><input type="checkbox" id="no2" checked> NO₂</label>
+          <label><input type="checkbox" id="o3" checked> O₃</label>
+          <label><input type="checkbox" id="temp"> Temperature</label>
+          <label><input type="checkbox" id="humidity"> Humidity</label>
+          <label><input type="checkbox" id="wind"> Wind</label>
+        </div>
+        
+        <div class="timeline-control">
+          <h4>Timeline</h4>
+          <input type="range" id="timeline" min="0" max="24" value="0">
+          <span id="timeline-label">Now</span>
+        </div>
+        
+        <div class="data-source">
+          <h4>Data Source</h4>
+          <label><input type="radio" name="source" value="tempo" checked> TEMPO (NASA)</label>
+          <label><input type="radio" name="source" value="ground"> Ground Sensors</label>
+          <label><input type="radio" name="source" value="combined"> Combined</label>
+        </div>
+      </div>
+
       <div class="legend">
         <div class="panel">
-          <span class="key"><i class="k" style="background:var(--good)"></i>Good</span>
-          <span class="key"><i class="k" style="background:var(--moderate)"></i>Moderate</span>
-          <span class="key"><i class="k" style="background:var(--usg)"></i>Unhealthy for sensitive groups</span>
-          <span class="key"><i class="k" style="background:var(--unhealthy)"></i>Unhealthy</span>
-          <span class="key"><i class="k" style="background:var(--very)"></i>Very Unhealthy</span>
-          <span class="key"><i class="k" style="background:var(--hazard)"></i>Hazardous</span>
+          <span class="key"><i class="k" style="background:var(--good)"></i>Good (0-50)</span>
+          <span class="key"><i class="k" style="background:var(--moderate)"></i>Moderate (51-100)</span>
+          <span class="key"><i class="k" style="background:var(--usg)"></i>Unhealthy for Sensitive (101-150)</span>
+          <span class="key"><i class="k" style="background:var(--unhealthy)"></i>Unhealthy (151-200)</span>
+          <span class="key"><i class="k" style="background:var(--very)"></i>Very Unhealthy (201-300)</span>
+          <span class="key"><i class="k" style="background:var(--hazard)"></i>Hazardous (301+)</span>
         </div>
       </div>
 
       <div class="dock">
         <div class="dock-in">
-          <button class="btn" id="btn-locate" title="My location">
-            <img class="ico" src="image 8 (1).png" alt="My location">
+          <button class="btn accent" id="btn-map" title="Interactive Map">
+            <img class="ico" src="image 8 (1).png" alt="Map">
           </button>
-          <button class="btn" id="btn-info" title="Data dashboard">
-            <img class="ico" src="image 7.png" alt="Data dashboard">
+          <button class="btn" id="btn-dashboard" title="Local Dashboard">
+            <img class="ico" src="image 7.png" alt="Dashboard">
           </button>
-          <button class="btn accent" id="btn-bot" title="AI Assistant">
-            <img class="ico" src="image-removebg-preview 2.png" alt="AI Assistant">
+          <button class="btn" id="btn-ai" title="AI Assistant">
+            <img class="ico" src="image-removebg-preview 2.png" alt="AI">
+          </button>
+          <button class="btn" id="btn-history" title="History">
+            <span class="ico-text">📊</span>
+          </button>
+          <button class="btn" id="btn-community" title="Community">
+            <span class="ico-text">👥</span>
           </button>
         </div>
       </div>

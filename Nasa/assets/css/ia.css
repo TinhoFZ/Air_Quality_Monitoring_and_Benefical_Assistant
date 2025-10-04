@@ -46,6 +46,30 @@ body{
   display:flex; flex-direction:column; gap: clamp(12px, 2vh, 16px); align-items:center;
 }
 
+.quick-actions{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.quick-btn{
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.quick-btn:hover{
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
 .composer{ display:flex; align-items:center; gap:12px; width:100%; max-width:var(--wrap); }
 .field{
   flex:1; background:#fff; border:2px solid #7cc4d1; height: var(--input-h);
