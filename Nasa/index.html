@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Air QMBA — Global Air Map</title>
+
+<link rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link rel="stylesheet"
+  href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+
+<link rel="stylesheet" href="assets/css/main.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <img src="logo.png" alt="Air QMBA" style="height:34px"/>
+      <div class="brand"><h2>Air QMBA</h2></div>
+    </div>
+
+    <div class="card">
+      <div class="map-shell">
+        <div id="map"></div>
+      </div>
+
+      <div class="legend">
+        <div class="panel">
+          <span class="key"><i class="k" style="background:var(--good)"></i>Good</span>
+          <span class="key"><i class="k" style="background:var(--moderate)"></i>Moderate</span>
+          <span class="key"><i class="k" style="background:var(--usg)"></i>Unhealthy for sensitive groups</span>
+          <span class="key"><i class="k" style="background:var(--unhealthy)"></i>Unhealthy</span>
+          <span class="key"><i class="k" style="background:var(--very)"></i>Very Unhealthy</span>
+          <span class="key"><i class="k" style="background:var(--hazard)"></i>Hazardous</span>
+        </div>
+      </div>
+
+      <div class="dock">
+        <div class="dock-in">
+          <button class="btn" id="btn-locate" title="My location">
+            <img class="ico" src="image 8 (1).png" alt="My location">
+          </button>
+          <button class="btn" id="btn-info" title="Data dashboard">
+            <img class="ico" src="image 7.png" alt="Data dashboard">
+          </button>
+          <button class="btn accent" id="btn-bot" title="AI Assistant">
+            <img class="ico" src="image-removebg-preview 2.png" alt="AI Assistant">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

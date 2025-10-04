@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Air QMBA — Local Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="assets/css/graf.css"/>
+</head>
+<body>
+  <div class="app">
+    <div class="top">
+      <img class="group-1" src="logo.png" alt="Air QMBA"/>
+      <div class="brand"><h2>Air QMBA</h2></div>
+    </div>
+
+    <div class="title">Local Dashboard</div>
+
+    <section class="canvas">
+      <div class="charts">
+        <div class="top-charts">
+          <div class="card">
+            <h3>Air Quality Index (AQI)</h3>
+            <canvas id="aqiGauge"></canvas>
+          </div>
+
+          <div class="card">
+            <h3>City Comparison</h3>
+            <canvas id="compareBar"></canvas>
+          </div>
+        </div>
+
+        <div class="card" style="justify-self:center">
+          <h3>Pollution Forecast</h3>
+          <canvas id="forecastBar"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="rotbar">
+    <div class="rot-inner">
+      <button class="rb-btn" id="rb-locate"><img src="image 8 (1).png" alt="Location"></button>
+      <button class="rb-btn" id="rb-info"><img src="image 7.png" alt="Info"></button>
+      <button class="rb-btn accent" id="rb-bot"><img src="image-removebg-preview 2.png" alt="Assistant"></button>
+    </div>
+  </div>
+
+<script src="assets/js/graf.js"></script>
+</body>
+</html>

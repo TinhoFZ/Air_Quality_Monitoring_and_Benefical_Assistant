@@ -1,0 +1,101 @@
+:root{
+  --bg:#f4f7f9;
+  --paper:#ffffff;
+  --ink:#0f172a;
+  --brand:#1b676a;
+  --bd:#e6eef3;
+  --shadow-1: 0 12px 30px rgba(15,23,42,.08);
+  --shadow-2: 0 8px 18px rgba(0,0,0,.06);
+  --r-lg: 18px;
+  --green:#28c76f;
+  --yellow:#ffd166;
+  --bar:#22c55e;
+  --bar2:#f59e0b;
+}
+
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+
+.app{
+  min-height:100vh;
+  padding: 18px clamp(14px,4vw,34px) 120px;
+}
+
+.top{
+  display:flex; align-items:center; gap:12px;
+}
+.group-1{ width: 40px; height: 40px; object-fit:contain }
+.brand h2{ margin:0; font-size:24px; font-weight:800; color:var(--brand) }
+
+.title{
+  text-align:center;
+  color: var(--brand);
+  font-weight: 800;
+  font-size: 20px;
+  margin: 12px 0 16px;
+}
+
+.canvas{
+  margin: 0 auto;
+  width: min(1120px, 100%);
+  background: var(--paper);
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  box-shadow: var(--shadow-1);
+  padding: 18px;
+}
+
+.charts{
+  display:grid;
+  gap: 18px;
+}
+.top-charts{
+  display:grid;
+  gap:18px;
+}
+@media(min-width:820px){
+  .top-charts{ grid-template-columns:1fr 1fr }
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--bd);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-2);
+  overflow:hidden;
+  padding:14px;
+}
+.card h3{ margin:0 0 10px; font-size:16px; color:#334155; }
+
+.rotbar{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(255,255,255,.95);
+  border:1px solid #e6ebf0;
+  border-radius:16px;
+  padding:12px 22px;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+  backdrop-filter: blur(6px);
+  z-index:999;
+}
+.rot-inner{
+  display:flex; gap:22px; justify-content:center;
+}
+.rb-btn{
+  width:64px; height:64px;
+  border-radius:999px;
+  border:0; background:#e5e7eb;
+  display:grid; place-items:center;
+  cursor:pointer;
+  transition:.2s;
+}
+.rb-btn:hover{ transform:translateY(-3px); background:#dbeafe }
+.rb-btn img{ width:60%; height:60%; object-fit:contain }
+.rb-btn.accent{ background:#cfe8ea; box-shadow: inset 0 0 0 4px #9fc9cc }
