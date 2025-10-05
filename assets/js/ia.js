@@ -9,7 +9,7 @@ const currentWind = 8;
 
 // Grok AI Configuration
 const GROK_CONFIG = {
-  apiKey: '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',
+  apiKey: 'grokToken',
   apiUrl: 'https://api.x.ai/v1/chat/completions',
   model: 'grok-beta',
   enabled: true // Now enabled with the provided API key
