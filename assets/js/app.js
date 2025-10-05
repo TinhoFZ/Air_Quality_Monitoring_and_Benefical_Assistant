@@ -76,7 +76,7 @@ async function updateLayers(){
   for (const p of activeParams){
     let points = [];
     if (source === 'openaq'){
-      const paramName = p === 'pm25' ? 'pm25' : (p === 'no2' ? 'no2' : (p === 'ch2o' ? 'hcho' : 'o3'));
+      const paramName = p === 'pm25' ? 'pm25' : (p === 'no2' ? 'no2' : 'o3');
       points = await fetchOpenAQ(bbox, paramName, hours);
       points.forEach(r => {
         const val = r.value;

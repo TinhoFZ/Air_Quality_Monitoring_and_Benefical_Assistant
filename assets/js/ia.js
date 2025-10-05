@@ -11,14 +11,14 @@ const aiResponses = {
   exercise: `With AQI of ${currentAQI} (Moderate), exercise is possible with precautions:
 • Recommended times: 6am-8am or 6pm-8pm
 • Avoid intense exercise between 10am-4pm
-• Use N95 mask if you have sensitivity
+• Use an N95 mask if you have sensitivity
 • Stay hydrated and monitor symptoms`,
   
   children: `For children with AQI ${currentAQI}:
 • Outdoor activities are allowed for short periods
 • Avoid parks and playgrounds between 10am-2pm
 • Keep windows closed at home
-• Use air purifier in children's room
+• Use an air purifier in the child's room
 • Monitor for coughs or eye irritation`,
   
   asthma: `Recommendations for asthmatics (AQI ${currentAQI}):
@@ -71,31 +71,31 @@ function getAIResponse(userMessage) {
   }
   
   if (lowerMessage.includes('ola') || lowerMessage.includes('olá') || lowerMessage.includes('oi')) {
-    return `Olá! Sou o assistente Air QMBA. Posso te ajudar com:
-• Recomendações de exercícios
-• Cuidados para crianças e idosos
-• Informações para asmáticos
-• Previsões meteorológicas
-• Dicas de saúde respiratória
+    return `Hello! I'm the Air QMBA assistant. I can help you with:
+• Exercise recommendations
+• Guidance for children and the elderly
+• Information for asthmatics
+• Weather and air quality forecasts
+• Respiratory health tips
 
-Como posso te ajudar hoje?`;
+How can I help you today?`;
   }
   
   if (lowerMessage.includes('ajuda') || lowerMessage.includes('help')) {
-    return `Posso te ajudar com informações sobre qualidade do ar! Tente perguntar:
-• "Posso correr hoje?"
-• "É seguro para crianças?"
-• "Recomendações para asmáticos"
-• "Previsão da semana"
-• Ou use os botões de ação rápida acima!`;
+    return `I can help with air quality information! Try asking:
+• "Can I run today?"
+• "Is it safe for children?"
+• "Recommendations for asthmatics"
+• "Weekly forecast"
+• Or use the quick action buttons above!`;
   }
   
-  return `Entendi sua pergunta sobre "${userMessage}". Com base nos dados atuais (AQI: ${currentAQI}, Temp: ${currentTemp}°C, Umidade: ${currentHumidity}%), posso te dar algumas recomendações gerais:
-• A qualidade do ar está moderada
-• Horários mais seguros para atividades: manhã cedo ou noite
-• Mantenha-se hidratado
-• Use máscara se tiver sensibilidade respiratória
-• Consulte um médico se tiver sintomas persistentes`;
+  return `I understand your question about "${userMessage}". Based on current data (AQI: ${currentAQI}, Temp: ${currentTemp}°C, Humidity: ${currentHumidity}%), here are general recommendations:
+• Air quality is moderate
+• Safest times for activities: early morning or evening
+• Stay hydrated
+• Use a mask if you have respiratory sensitivity
+• Consult a doctor if symptoms persist`;
 }
 
 function simulateTyping(callback, delay = 1000) {
@@ -111,31 +111,17 @@ function simulateTyping(callback, delay = 1000) {
   }, delay);
 }
 
-send.addEventListener('click', async ()=>{
+send.addEventListener('click', ()=>{
   const userMessage = msg.value.trim();
   if(!userMessage) return;
   
   appendBubble(userMessage, true);
   msg.value = '';
-  if (window.GROQ_URL || window.GROQ_KEY) {
-    simulateTyping(async () => {
-      try {
-        const resp = await fetch((window.GROQ_URL||'/groq'),{
-          method:'POST', headers:{'Content-Type':'application/json', ...(window.GROQ_KEY?{Authorization:`Bearer ${window.GROQ_KEY}`}:{})},
-          body: JSON.stringify({ prompt: userMessage })
-        });
-        const js = await resp.json();
-        appendBubble(js.text || js.answer || '...');
-      } catch(e){
-        appendBubble(getAIResponse(userMessage));
-      }
-    });
-  } else {
-    simulateTyping(() => {
-      const response = getAIResponse(userMessage);
-      appendBubble(response);
-    });
-  }
+  
+  simulateTyping(() => {
+    const response = getAIResponse(userMessage);
+    appendBubble(response);
+  });
 });
 
 msg.addEventListener('keydown', e=>{
@@ -146,30 +132,16 @@ msg.addEventListener('keydown', e=>{
 });
 
 document.querySelectorAll('.quick-btn').forEach(btn => {
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
     const action = btn.dataset.action;
     const userMessage = btn.textContent.replace(/[🏃👶🫁📅]/g, '').trim();
     
     appendBubble(userMessage, true);
-    if (window.GROQ_URL || window.GROQ_KEY) {
-      simulateTyping(async () => {
-        try {
-          const resp = await fetch((window.GROQ_URL||'/groq'),{
-            method:'POST', headers:{'Content-Type':'application/json', ...(window.GROQ_KEY?{Authorization:`Bearer ${window.GROQ_KEY}`}:{})},
-            body: JSON.stringify({ prompt: userMessage })
-          });
-          const js = await resp.json();
-          appendBubble(js.text || js.answer || '...');
-        } catch(e){
-          appendBubble(aiResponses[action] || getAIResponse(userMessage));
-        }
-      });
-    } else {
-      simulateTyping(() => {
-        const response = aiResponses[action] || getAIResponse(userMessage);
-        appendBubble(response);
-      });
-    }
+    
+    simulateTyping(() => {
+      const response = aiResponses[action];
+      appendBubble(response);
+    });
   });
 });
 

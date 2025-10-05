@@ -4,7 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Air QMBA — Global Air Map</title>
-<link rel="icon" href="logo.png">
 
 <link rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -18,7 +17,7 @@
   <div class="wrap">
     <div class="top">
       <img src="logo.png" alt="Air QMBA" style="height:34px"/>
-      <div class="brand"><h2>Air QMBA</h2></div>
+      <div class="brand"><h2>Air</h2></div>
     </div>
 
     <div class="card">
@@ -32,7 +31,6 @@
           <label><input type="checkbox" id="pm25" checked> PM2.5</label>
           <label><input type="checkbox" id="no2" checked> NO₂</label>
           <label><input type="checkbox" id="o3" checked> O₃</label>
-          <label><input type="checkbox" id="ch2o"> CH₂O</label>
           <label><input type="checkbox" id="temp"> Temperature</label>
           <label><input type="checkbox" id="humidity"> Humidity</label>
           <label><input type="checkbox" id="wind"> Wind</label>
@@ -65,21 +63,21 @@
 
       <div class="dock">
         <div class="dock-in">
-          <button class="btn accent" id="btn-map" title="Interactive Map">
+          <a class="btn accent" id="btn-map" title="Interactive Map" href="index.html">
             <img class="ico" src="image 8 (1).png" alt="Map">
-          </button>
-          <button class="btn" id="btn-dashboard" title="Local Dashboard">
+          </a>
+          <a class="btn" id="btn-dashboard" title="Local Dashboard" href="graf.html">
             <img class="ico" src="image 7.png" alt="Dashboard">
-          </button>
-          <button class="btn" id="btn-ai" title="AI Assistant">
+          </a>
+          <a class="btn" id="btn-ai" title="AI Assistant" href="IA.html">
             <img class="ico" src="image-removebg-preview 2.png" alt="AI">
-          </button>
-          <button class="btn" id="btn-history" title="History">
+          </a>
+          <a class="btn" id="btn-history" title="History" href="historico.html">
             <span class="ico-text">📊</span>
-          </button>
-          <button class="btn" id="btn-community" title="Community">
+          </a>
+          <a class="btn" id="btn-community" title="Community" href="comunidade.html">
             <span class="ico-text">👥</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -88,13 +86,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-<script>
-  // Configure proxies to avoid CORS
-  window.OPENAQ_PROXY = window.OPENAQ_PROXY || 'http://localhost:3000/openaq';
-  window.TEMPO_API_URL = window.TEMPO_API_URL || 'http://localhost:3000/s5p';
-  window.AIRNOW_URL = window.AIRNOW_URL || 'http://localhost:3000/airnow';
-  console.log('Config:', { OPENAQ_PROXY: window.OPENAQ_PROXY, TEMPO_API_URL: window.TEMPO_API_URL, AIRNOW_URL: window.AIRNOW_URL });
-</script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

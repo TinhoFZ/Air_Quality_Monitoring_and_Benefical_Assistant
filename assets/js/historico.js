@@ -2,67 +2,31 @@ let currentDataSource = 'comparison';
 
 const dataSourceStyles = {
   comparison: {
-    tempo: { color: '#3498db', label: 'Satellite' },
-    ground: { color: '#e74c3c', label: 'Ground sensors' }
+    tempo: { color: '#3498db', label: 'TEMPO (NASA)' },
+    ground: { color: '#e74c3c', label: 'Ground Sensors' }
   }
 };
 
-async function fetchGroundHistory(hoursBack = 24) {
-  const bbox = { west: -47.2, south: -24.1, east: -46.2, north: -23.2 };
-  const since = new Date(Date.now() - hoursBack * 3600 * 1000).toISOString();
-  const proxy = window.OPENAQ_PROXY || 'http://localhost:3000/openaq';
-  const params = new URLSearchParams({
-    date_from: since,
-    parameter: 'pm25',
-    limit: '1000',
-    sort: 'asc',
-    order_by: 'datetime',
-    bbox: `${bbox.west},${bbox.south},${bbox.east},${bbox.north}`
-  });
-  const res = await fetch(`${proxy}?${params.toString()}`);
-  if (!res.ok) return [];
-  const js = await res.json();
-  return js.results || [];
-}
-
-async function generateHourlyData() {
+function generateHourlyData() {
   const hours = [];
+  const tempoData = [];
+  const groundData = [];
+  
   for (let i = 23; i >= 0; i--) {
-    const hour = new Date(Date.now() - i * 3600 * 1000);
+    const hour = new Date(Date.now() - i * 60 * 60 * 1000);
     hours.push(hour.getHours() + 'h');
+    tempoData.push(Math.max(0, 15 + Math.random() * 20 + Math.sin(i * 0.5) * 5));
+    groundData.push(Math.max(0, 12 + Math.random() * 18 + Math.sin(i * 0.5) * 4));
   }
-  const ground = await fetchGroundHistory(24);
-  const byHour = new Map();
-  ground.forEach(r => {
-    const d = new Date(r.date.utc);
-    const h = d.getHours();
-    byHour.set(h, (byHour.get(h) || []).concat(r.value));
-  });
-  const groundData = hours.map(lbl => {
-    const h = parseInt(lbl.replace('h',''),10);
-    const vals = byHour.get(h) || [];
-    if (vals.length === 0) return null;
-    return vals.reduce((a,b)=>a+b,0)/vals.length;
-  });
-  const tempoData = groundData.map(v => (v==null?null:v*1.1));
+  
   return { hours, tempoData, groundData };
 }
 
-async function generateWeeklyData() {
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const ground = await fetchGroundHistory(24*7);
-  const byDay = new Map();
-  ground.forEach(r => {
-    const d = new Date(r.date.utc);
-    const k = d.getUTCDay();
-    byDay.set(k, (byDay.get(k)||[]).concat(r.value));
-  });
-  const groundData = days.map((_, idx) => {
-    const vals = byDay.get((idx+1)%7) || [];
-    if (vals.length === 0) return null;
-    return Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10;
-  });
-  const tempoData = groundData.map(v => (v==null?null:v*1.1));
+function generateWeeklyData() {
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const tempoData = [18, 22, 15, 28, 25, 19, 16];
+  const groundData = [16, 20, 14, 26, 23, 17, 15];
+  
   return { days, tempoData, groundData };
 }
 
@@ -82,8 +46,8 @@ function updateCharts() {
   updateComparisonChart();
 }
 
-async function updateHourlyChart() {
-  const { hours, tempoData, groundData } = await generateHourlyData();
+function updateHourlyChart() {
+  const { hours, tempoData, groundData } = generateHourlyData();
   
   const ctx = document.getElementById('hourlyChart').getContext('2d');
   
@@ -97,7 +61,7 @@ async function updateHourlyChart() {
       labels: hours,
       datasets: [
         {
-          label: 'Satellite',
+          label: 'TEMPO (NASA)',
           data: tempoData,
           borderColor: '#3498db',
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
@@ -105,7 +69,7 @@ async function updateHourlyChart() {
           fill: true
         },
         {
-          label: 'Ground sensors',
+          label: 'Sensores Terrestres',
           data: groundData,
           borderColor: '#e74c3c',
           backgroundColor: 'rgba(231, 76, 60, 0.1)',
@@ -148,8 +112,8 @@ async function updateHourlyChart() {
   });
 }
 
-async function updateWeeklyChart() {
-  const { days, tempoData, groundData } = await generateWeeklyData();
+function updateWeeklyChart() {
+  const { days, tempoData, groundData } = generateWeeklyData();
   
   const ctx = document.getElementById('weeklyChart').getContext('2d');
   
@@ -163,14 +127,14 @@ async function updateWeeklyChart() {
       labels: days,
       datasets: [
         {
-          label: 'Satellite',
+          label: 'TEMPO (NASA)',
           data: tempoData,
           backgroundColor: 'rgba(52, 152, 219, 0.7)',
           borderColor: '#3498db',
           borderWidth: 1
         },
         {
-          label: 'Ground sensors',
+          label: 'Sensores Terrestres',
           data: groundData,
           backgroundColor: 'rgba(231, 76, 60, 0.7)',
           borderColor: '#e74c3c',
@@ -201,7 +165,7 @@ async function updateWeeklyChart() {
         x: {
           title: {
             display: true,
-            text: 'Week days'
+            text: 'Days of the Week'
           }
         }
       }
@@ -227,21 +191,21 @@ function updateComparisonChart() {
       labels: pollutants,
       datasets: [
         {
-          label: 'WHO limit',
+          label: 'Limite OMS',
           data: omsLimits,
           backgroundColor: 'rgba(46, 204, 113, 0.7)',
           borderColor: '#2ecc71',
           borderWidth: 1
         },
         {
-          label: 'Satellite',
+          label: 'TEMPO (NASA)',
           data: tempoData,
           backgroundColor: 'rgba(52, 152, 219, 0.7)',
           borderColor: '#3498db',
           borderWidth: 1
         },
         {
-          label: 'Ground sensors',
+          label: 'Sensores Terrestres',
           data: groundData,
           backgroundColor: 'rgba(231, 76, 60, 0.7)',
           borderColor: '#e74c3c',

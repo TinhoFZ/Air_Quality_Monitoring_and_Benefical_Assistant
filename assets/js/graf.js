@@ -212,7 +212,7 @@ new Chart(document.getElementById('forecastBar'), {
       x: {
         title: {
           display: true,
-          text: 'Dias da Semana'
+          text: 'Days of the Week'
         }
       }
     }

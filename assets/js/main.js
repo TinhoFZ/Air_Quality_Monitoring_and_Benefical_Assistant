@@ -21,7 +21,6 @@ const mapLayers = {
   pm25: L.layerGroup(),
   no2: L.layerGroup(),
   o3: L.layerGroup(),
-  ch2o: L.layerGroup(),
   temp: L.layerGroup(),
   humidity: L.layerGroup(),
   wind: L.layerGroup()
@@ -106,91 +105,43 @@ const realCities = [
 ];
 
 async function fetchRealAirQualityData() {
-  const bounds = map.getBounds();
-  const west = bounds.getWest();
-  const south = bounds.getSouth();
-  const east = bounds.getEast();
-  const north = bounds.getNorth();
-  const hours = parseInt(document.getElementById('timeline').value) || 0;
-  const since = new Date(Date.now() - hours * 3600 * 1000).toISOString();
-  const wanted = [];
-  if (document.getElementById('pm25').checked) wanted.push('pm25');
-  if (document.getElementById('no2').checked) wanted.push('no2');
-  if (document.getElementById('o3').checked) wanted.push('o3');
-  if (document.getElementById('ch2o')?.checked) wanted.push('hcho');
-
-  // Se nada marcado, não busca
-  if (wanted.length === 0) return [];
-
-  // Buscar por parâmetro e mesclar por local (lat/lon+station)
-  const byKey = new Map();
-  const OPENAQ_PROXY = window.OPENAQ_PROXY || 'http://localhost:3000/openaq';
-  for (const parameter of wanted) {
-    const qs = `date_from=${encodeURIComponent(since)}&parameter=${parameter}&limit=1000&sort=desc&order_by=datetime&bbox=${west},${south},${east},${north}`;
-    const url = OPENAQ_PROXY
-      ? `${OPENAQ_PROXY}?${qs}`
-      : `https://api.openaq.org/v2/measurements?${qs}`;
-    const res = await fetch(url);
-    if (!res.ok) continue;
-    const js = await res.json();
-    (js.results || []).forEach(r => {
-      if (!r.coordinates) return;
-      const key = `${r.location}|${r.coordinates.latitude.toFixed(4)},${r.coordinates.longitude.toFixed(4)}`;
-      const existing = byKey.get(key) || {
-        lat: r.coordinates.latitude,
-        lon: r.coordinates.longitude,
-        pm25: null,
-        no2: null,
-        o3: null,
-        ch2o: null,
-        source: 'OpenAQ Sensors',
-        station: r.location,
-        city: r.city || 'Unknown',
-        country: r.country || 'Unknown',
-        timestamp: new Date(r.date.utc)
-      };
-      if (r.parameter === 'pm25') existing.pm25 = r.value;
-      if (r.parameter === 'no2') existing.no2 = r.value;
-      if (r.parameter === 'o3') existing.o3 = r.value;
-      if (r.parameter === 'hcho') existing.ch2o = r.value;
-      byKey.set(key, existing);
-    });
+  const points = [];
+  
+  try {
+    // Usando OpenAQ API para dados reais
+    const response = await fetch('https://api.openaq.org/v2/latest?limit=1000&sort=desc&order_by=lastUpdated');
+    const data = await response.json();
+    
+    if (data.results && data.results.length > 0) {
+      data.results.forEach(measurement => {
+        if (measurement.coordinates && measurement.measurements) {
+          const pm25Measurement = measurement.measurements.find(m => m.parameter === 'pm25');
+          const no2Measurement = measurement.measurements.find(m => m.parameter === 'no2');
+          const o3Measurement = measurement.measurements.find(m => m.parameter === 'o3');
+          
+          if (pm25Measurement) {
+            points.push({
+              lat: measurement.coordinates.latitude,
+              lon: measurement.coordinates.longitude,
+              pm25: pm25Measurement.value,
+              no2: no2Measurement ? no2Measurement.value : null,
+              o3: o3Measurement ? o3Measurement.value : null,
+              source: 'OpenAQ Sensors',
+              station: measurement.location,
+              city: measurement.city || 'Unknown',
+              country: measurement.country || 'Unknown',
+              timestamp: new Date(pm25Measurement.lastUpdated)
+            });
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.log('OpenAQ API not available, using backup data');
+    return generateBackupRealData();
   }
-  return Array.from(byKey.values());
-}
-
-// Coletor TEMPO real (configurável): defina window.TEMPO_API_URL para um endpoint que aceite bbox e horas
-// Ex.: window.TEMPO_API_URL = 'https://seu-proxy/tempo';
-async function fetchTEMPOPoints(hoursAgo = 0) {
-  const bounds = map.getBounds();
-  const query = new URLSearchParams({
-    west: String(bounds.getWest()),
-    south: String(bounds.getSouth()),
-    east: String(bounds.getEast()),
-    north: String(bounds.getNorth()),
-    hours: String(hoursAgo)
-  });
-  const base = window.TEMPO_API_URL;
-  if (!base) return [];
-  const url = `${base}?${query.toString()}`;
-  const res = await fetch(url, { credentials: 'omit' });
-  if (!res.ok) return [];
-  const data = await res.json();
-  // Espera-se um array de objetos: {lat, lon, pm25?, no2?, o3?, ch2o?, site?, time?}
-  if (!Array.isArray(data)) return [];
-  return data.map(r => ({
-    lat: r.lat,
-    lon: r.lon,
-    pm25: r.pm25 ?? null,
-    no2: r.no2 ?? null,
-    o3: r.o3 ?? null,
-    ch2o: r.ch2o ?? r.hcho ?? null,
-    source: 'NASA TEMPO',
-    station: r.site || 'TEMPO',
-    city: r.city || null,
-    country: r.country || null,
-    timestamp: r.time ? new Date(r.time) : new Date()
-  }));
+  
+  return points.length > 0 ? points : generateBackupRealData();
 }
 
 function generateBackupRealData() {
@@ -378,24 +329,18 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
   }).addTo(map);
   
   let points = [];
+  
   try {
-    if (source === 'ground') {
+    if (source === 'tempo' || source === 'ground' || source === 'combined') {
+      // Carrega dados reais da OpenAQ API
       points = await fetchRealAirQualityData();
-    } else if (source === 'tempo') {
-      points = await fetchTEMPOPoints(hoursAgo);
-    } else if (source === 'combined') {
-      const [g, t] = await Promise.all([
-        fetchRealAirQualityData(),
-        fetchTEMPOPoints(hoursAgo)
-      ]);
-      points = g.concat(t);
+      console.log(`Loaded ${points.length} real data points`);
     } else {
-      points = await fetchRealAirQualityData();
+      points = generateBackupRealData();
     }
-    console.log(`Loaded ${points.length} real data points from ${source}`);
   } catch (error) {
-    console.log('Error loading data:', error);
-    points = [];
+    console.log('Error loading real data, using backup:', error);
+    points = generateBackupRealData();
   }
   
   // Remove loading indicator
@@ -408,7 +353,6 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
   if (document.getElementById('temp').checked) activeLayers.push('temp');
   if (document.getElementById('humidity').checked) activeLayers.push('humidity');
   if (document.getElementById('wind').checked) activeLayers.push('wind');
-  if (document.getElementById('ch2o').checked) activeLayers.push('ch2o');
   
   points.forEach(point => {
     if (activeLayers.includes('pm25') && point.pm25) {
@@ -433,7 +377,8 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
         </div>
         ${point.no2 ? `<strong>NO₂:</strong> ${point.no2} µg/m³<br>` : ''}
         ${point.o3 ? `<strong>O₃:</strong> ${point.o3} µg/m³<br>` : ''}
-        ${point.ch2o ? `<strong>CH₂O:</strong> ${point.ch2o} µg/m³<br>` : ''}
+        ${point.temp ? `<strong>🌡️ Temp:</strong> ${point.temp}°C<br>` : ''}
+        ${point.humidity ? `<strong>💧 Humidity:</strong> ${point.humidity}%<br>` : ''}
         ${point.intensity ? `<strong>🔥 Intensity:</strong> ${point.intensity}<br>` : ''}
         <small style="color: #95a5a6; margin-top: 8px; display: block;">
           Updated: ${point.timestamp ? point.timestamp.toLocaleString() : 'Now'}
@@ -477,24 +422,6 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
         </div>
       `);
       mapLayers.o3.addLayer(marker);
-    }
-    
-    if (activeLayers.includes('ch2o') && point.ch2o) {
-      const hchoColor = point.ch2o > 10 ? '#e74c3c' : point.ch2o > 5 ? '#f39c12' : '#27ae60';
-      const marker = L.circleMarker([point.lat, point.lon], {
-        radius: Math.max(4, Math.min(10, point.ch2o / 2)),
-        fillColor: hchoColor,
-        color: '#16a085',
-        weight: 1,
-        fillOpacity: 0.7
-      }).bindPopup(`
-        <div style="min-width: 180px;">
-          <h4 style="margin: 0 0 8px;">${point.city || 'Unknown City'}</h4>
-          <strong>CH₂O:</strong> ${point.ch2o} µg/m³<br>
-          <small>${point.station}</small>
-        </div>
-      `);
-      mapLayers.ch2o.addLayer(marker);
     }
     
     if (activeLayers.includes('temp') && point.temp) {
@@ -569,7 +496,7 @@ document.querySelectorAll('input[name="source"]').forEach(radio => {
   });
 });
 
-document.querySelectorAll('#pm25, #no2, #o3, #ch2o, #temp, #humidity, #wind').forEach(checkbox => {
+document.querySelectorAll('#pm25, #no2, #o3, #temp, #humidity, #wind').forEach(checkbox => {
   checkbox.addEventListener('change', async () => {
     const hours = parseInt(document.getElementById('timeline').value);
     const source = document.querySelector('input[name="source"]:checked').value;
@@ -577,8 +504,7 @@ document.querySelectorAll('#pm25, #no2, #o3, #ch2o, #temp, #humidity, #wind').fo
   });
 });
 
-const btnLocate = document.getElementById('btn-locate');
-if (btnLocate) btnLocate.onclick = () => {
+document.getElementById('btn-locate').onclick = () => {
   if(!navigator.geolocation){
     alert('Geolocation not supported by your browser.');
     return;
@@ -588,24 +514,33 @@ if (btnLocate) btnLocate.onclick = () => {
     map.setView([latitude, longitude], 12);
     L.marker([latitude, longitude])
       .addTo(map)
-      .bindPopup('Você está aqui.')
+      .bindPopup('You are here.')
       .openPopup();
   }, ()=>alert('Unable to get your location.'));
 };
 
-const btnMap = document.getElementById('btn-map');
-if (btnMap) btnMap.onclick = () => { window.location.href = "index.html"; };
-const btnDash = document.getElementById('btn-dashboard');
-if (btnDash) btnDash.onclick = () => { window.location.href = "graf.html"; };
-const btnAI = document.getElementById('btn-ai');
-if (btnAI) btnAI.onclick = () => { window.location.href = "IA.html"; };
-const btnHist = document.getElementById('btn-history');
-if (btnHist) btnHist.onclick = () => { window.location.href = "historico.html"; };
-const btnComm = document.getElementById('btn-community');
-if (btnComm) btnComm.onclick = () => { window.location.href = "comunidade.html"; };
+document.getElementById('btn-map').onclick = () => {
+  window.location.href = "index.html";
+};
+
+document.getElementById('btn-dashboard').onclick = () => {
+  window.location.href = "graf.html";
+};
+
+document.getElementById('btn-ai').onclick = () => {
+  window.location.href = "IA.html";
+};
+
+document.getElementById('btn-history').onclick = () => {
+  window.location.href = "historico.html";
+};
+
+document.getElementById('btn-community').onclick = () => {
+  window.location.href = "comunidade.html";
+};
 
 map.whenReady(async () => {
-  await updateMapLayers('ground', 0);
+  await updateMapLayers('tempo', 0);
 });
 
 map.on('moveend', async () => {

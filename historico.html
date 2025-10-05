@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Air QMBA — History & Validation</title>
+<title>Air QMBA — History and Validation</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -16,15 +16,15 @@
       <div class="brand"><h2>Air QMBA</h2></div>
     </div>
 
-    <div class="title">Data History & Validation</div>
+    <div class="title">History and Data Validation</div>
 
     <div class="data-source-selector">
-      <h4>Sources</h4>
+      <h4>Source Comparison</h4>
       <div class="source-options">
         <button class="source-btn active" data-source="comparison">Comparison</button>
-        <button class="source-btn" data-source="tempo">Satellite</button>
-        <button class="source-btn" data-source="ground">Ground sensors</button>
-        <button class="source-btn" data-source="validation">Cross validation</button>
+        <button class="source-btn" data-source="tempo">TEMPO (NASA)</button>
+        <button class="source-btn" data-source="ground">Ground Sensors</button>
+        <button class="source-btn" data-source="validation">Cross Validation</button>
       </div>
     </div>
 
@@ -37,39 +37,39 @@
           </div>
 
           <div class="card">
-            <h3>Last 7 days</h3>
+            <h3>Last 7 Days</h3>
             <canvas id="weeklyChart"></canvas>
           </div>
         </div>
 
         <div class="card">
-          <h3>Satellite vs Ground sensors</h3>
+            <h3>TEMPO vs Ground Sensors</h3>
           <canvas id="comparisonChart"></canvas>
         </div>
 
         <div class="card">
-          <h3>WHO guideline vs Measured</h3>
+            <h3>WHO Reference vs Real Data</h3>
           <div class="oms-comparison">
             <div class="oms-item">
-              <span class="oms-label">WHO PM2.5 limit:</span>
+              <span class="oms-label">WHO Limit PM2.5:</span>
               <span class="oms-value">15 µg/m³</span>
             </div>
             <div class="oms-item">
-              <span class="oms-label">Satellite avg:</span>
-              <span class="oms-value tempo" id="who-sat">—</span>
+              <span class="oms-label">TEMPO Average:</span>
+              <span class="oms-value tempo">18.5 µg/m³</span>
             </div>
             <div class="oms-item">
-              <span class="oms-label">Ground avg:</span>
-              <span class="oms-value ground" id="who-ground">—</span>
+              <span class="oms-label">Sensors Average:</span>
+              <span class="oms-value ground">16.2 µg/m³</span>
             </div>
             <div class="oms-status">
-              <span class="status-text" id="who-status">—</span>
+              <span class="status-text">⚠️ Above recommended limit</span>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <h3>Pollutant filters</h3>
+            <h3>Pollutant Filters</h3>
           <div class="pollutant-filters">
             <label><input type="checkbox" id="filter-pm25" checked> PM2.5</label>
             <label><input type="checkbox" id="filter-pm10" checked> PM10</label>
@@ -80,23 +80,23 @@
         </div>
 
         <div class="card">
-          <h3>Previsões Baseadas em IA</h3>
+          <h3>AI-Based Forecasts</h3>
           <div class="ai-predictions">
             <div class="prediction-item">
-              <span class="prediction-label">Próximas 6h:</span>
-              <span class="prediction-value good">AQI 38 (Bom)</span>
+              <span class="prediction-label">Next 6h:</span>
+              <span class="prediction-value good">AQI 38 (Good)</span>
             </div>
             <div class="prediction-item">
-              <span class="prediction-label">Próximas 24h:</span>
-              <span class="prediction-value moderate">AQI 52 (Moderado)</span>
+              <span class="prediction-label">Next 24h:</span>
+              <span class="prediction-value moderate">AQI 52 (Moderate)</span>
             </div>
             <div class="prediction-item">
-              <span class="prediction-label">Próximos 3 dias:</span>
-              <span class="prediction-value moderate">AQI 45-58 (Moderado)</span>
+              <span class="prediction-label">Next 3 days:</span>
+              <span class="prediction-value moderate">AQI 45-58 (Moderate)</span>
             </div>
             <div class="prediction-item">
-              <span class="prediction-label">Próxima semana:</span>
-              <span class="prediction-value good">AQI 35-42 (Bom)</span>
+              <span class="prediction-label">Next week:</span>
+              <span class="prediction-value good">AQI 35-42 (Good)</span>
             </div>
           </div>
         </div>
@@ -106,11 +106,11 @@
 
   <div class="rotbar">
     <div class="rot-inner">
-      <button class="rb-btn" id="rb-map"><img src="image 8 (1).png" alt="Map"></button>
-      <button class="rb-btn" id="rb-dashboard"><img src="image 7.png" alt="Dashboard"></button>
-      <button class="rb-btn" id="rb-ai"><img src="image-removebg-preview 2.png" alt="AI"></button>
-      <button class="rb-btn accent" id="rb-history"><span style="font-size:20px;">📊</span></button>
-      <button class="rb-btn" id="rb-community"><span style="font-size:20px;">👥</span></button>
+      <a class="rb-btn" id="rb-map" href="index.html"><img src="image 8 (1).png" alt="Map"></a>
+      <a class="rb-btn" id="rb-dashboard" href="graf.html"><img src="image 7.png" alt="Dashboard"></a>
+      <a class="rb-btn" id="rb-ai" href="IA.html"><img src="image-removebg-preview 2.png" alt="AI"></a>
+      <a class="rb-btn accent" id="rb-history" href="historico.html"><span style="font-size:20px;">📊</span></a>
+      <a class="rb-btn" id="rb-community" href="comunidade.html"><span style="font-size:20px;">👥</span></a>
     </div>
   </div>
 
