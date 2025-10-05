@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Air QMBA — Histórico e Validação</title>
+<title>Air QMBA — History & Validation</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -16,15 +16,15 @@
       <div class="brand"><h2>Air QMBA</h2></div>
     </div>
 
-    <div class="title">Histórico e Validação de Dados</div>
+    <div class="title">Data History & Validation</div>
 
     <div class="data-source-selector">
-      <h4>Comparação de Fontes</h4>
+      <h4>Sources</h4>
       <div class="source-options">
-        <button class="source-btn active" data-source="comparison">Comparação</button>
-        <button class="source-btn" data-source="tempo">TEMPO (NASA)</button>
-        <button class="source-btn" data-source="ground">Sensores Terrestres</button>
-        <button class="source-btn" data-source="validation">Validação Cruzada</button>
+        <button class="source-btn active" data-source="comparison">Comparison</button>
+        <button class="source-btn" data-source="tempo">Satellite</button>
+        <button class="source-btn" data-source="ground">Ground sensors</button>
+        <button class="source-btn" data-source="validation">Cross validation</button>
       </div>
     </div>
 
@@ -32,44 +32,44 @@
       <div class="charts">
         <div class="top-charts">
           <div class="card">
-            <h3>Últimas 24h - PM2.5</h3>
+            <h3>Last 24h - PM2.5</h3>
             <canvas id="hourlyChart"></canvas>
           </div>
 
           <div class="card">
-            <h3>Últimos 7 Dias</h3>
+            <h3>Last 7 days</h3>
             <canvas id="weeklyChart"></canvas>
           </div>
         </div>
 
         <div class="card">
-          <h3>Comparação TEMPO vs Sensores Terrestres</h3>
+          <h3>Satellite vs Ground sensors</h3>
           <canvas id="comparisonChart"></canvas>
         </div>
 
         <div class="card">
-          <h3>Referência OMS vs Dados Reais</h3>
+          <h3>WHO guideline vs Measured</h3>
           <div class="oms-comparison">
             <div class="oms-item">
-              <span class="oms-label">Limite OMS PM2.5:</span>
+              <span class="oms-label">WHO PM2.5 limit:</span>
               <span class="oms-value">15 µg/m³</span>
             </div>
             <div class="oms-item">
-              <span class="oms-label">Média TEMPO:</span>
-              <span class="oms-value tempo">18.5 µg/m³</span>
+              <span class="oms-label">Satellite avg:</span>
+              <span class="oms-value tempo" id="who-sat">—</span>
             </div>
             <div class="oms-item">
-              <span class="oms-label">Média Sensores:</span>
-              <span class="oms-value ground">16.2 µg/m³</span>
+              <span class="oms-label">Ground avg:</span>
+              <span class="oms-value ground" id="who-ground">—</span>
             </div>
             <div class="oms-status">
-              <span class="status-text">⚠️ Acima do limite recomendado</span>
+              <span class="status-text" id="who-status">—</span>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <h3>Filtros por Poluente</h3>
+          <h3>Pollutant filters</h3>
           <div class="pollutant-filters">
             <label><input type="checkbox" id="filter-pm25" checked> PM2.5</label>
             <label><input type="checkbox" id="filter-pm10" checked> PM10</label>
@@ -106,9 +106,9 @@
 
   <div class="rotbar">
     <div class="rot-inner">
-      <button class="rb-btn" id="rb-map"><img src="image 8 (1).png" alt="Mapa"></button>
+      <button class="rb-btn" id="rb-map"><img src="image 8 (1).png" alt="Map"></button>
       <button class="rb-btn" id="rb-dashboard"><img src="image 7.png" alt="Dashboard"></button>
-      <button class="rb-btn" id="rb-ai"><img src="image-removebg-preview 2.png" alt="IA"></button>
+      <button class="rb-btn" id="rb-ai"><img src="image-removebg-preview 2.png" alt="AI"></button>
       <button class="rb-btn accent" id="rb-history"><span style="font-size:20px;">📊</span></button>
       <button class="rb-btn" id="rb-community"><span style="font-size:20px;">👥</span></button>
     </div>

@@ -111,17 +111,31 @@ function simulateTyping(callback, delay = 1000) {
   }, delay);
 }
 
-send.addEventListener('click', ()=>{
+send.addEventListener('click', async ()=>{
   const userMessage = msg.value.trim();
   if(!userMessage) return;
   
   appendBubble(userMessage, true);
   msg.value = '';
-  
-  simulateTyping(() => {
-    const response = getAIResponse(userMessage);
-    appendBubble(response);
-  });
+  if (window.GROQ_URL || window.GROQ_KEY) {
+    simulateTyping(async () => {
+      try {
+        const resp = await fetch((window.GROQ_URL||'/groq'),{
+          method:'POST', headers:{'Content-Type':'application/json', ...(window.GROQ_KEY?{Authorization:`Bearer ${window.GROQ_KEY}`}:{})},
+          body: JSON.stringify({ prompt: userMessage })
+        });
+        const js = await resp.json();
+        appendBubble(js.text || js.answer || '...');
+      } catch(e){
+        appendBubble(getAIResponse(userMessage));
+      }
+    });
+  } else {
+    simulateTyping(() => {
+      const response = getAIResponse(userMessage);
+      appendBubble(response);
+    });
+  }
 });
 
 msg.addEventListener('keydown', e=>{
@@ -132,16 +146,30 @@ msg.addEventListener('keydown', e=>{
 });
 
 document.querySelectorAll('.quick-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     const action = btn.dataset.action;
     const userMessage = btn.textContent.replace(/[🏃👶🫁📅]/g, '').trim();
     
     appendBubble(userMessage, true);
-    
-    simulateTyping(() => {
-      const response = aiResponses[action];
-      appendBubble(response);
-    });
+    if (window.GROQ_URL || window.GROQ_KEY) {
+      simulateTyping(async () => {
+        try {
+          const resp = await fetch((window.GROQ_URL||'/groq'),{
+            method:'POST', headers:{'Content-Type':'application/json', ...(window.GROQ_KEY?{Authorization:`Bearer ${window.GROQ_KEY}`}:{})},
+            body: JSON.stringify({ prompt: userMessage })
+          });
+          const js = await resp.json();
+          appendBubble(js.text || js.answer || '...');
+        } catch(e){
+          appendBubble(aiResponses[action] || getAIResponse(userMessage));
+        }
+      });
+    } else {
+      simulateTyping(() => {
+        const response = aiResponses[action] || getAIResponse(userMessage);
+        appendBubble(response);
+      });
+    }
   });
 });
 
