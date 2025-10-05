@@ -7,6 +7,34 @@ const currentTemp = 24;
 const currentHumidity = 65;
 const currentWind = 8;
 
+// Grok AI Configuration
+const GROK_CONFIG = {
+  apiKey: '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',
+  apiUrl: 'https://api.x.ai/v1/chat/completions',
+  model: 'grok-beta',
+  enabled: true // Now enabled with the provided API key
+};
+
+// Air Quality Context for Grok
+const AIR_QUALITY_CONTEXT = `
+You are an AI assistant specialized in air quality and respiratory health. You have access to real-time air quality data:
+
+Current Conditions:
+- AQI: ${currentAQI} (Moderate)
+- Temperature: ${currentTemp}°C
+- Humidity: ${currentHumidity}%
+- Wind Speed: ${currentWind} km/h
+
+Your expertise includes:
+- Air quality interpretation and health recommendations
+- Exercise and outdoor activity guidance based on AQI
+- Special considerations for children, elderly, and asthmatics
+- Weather and air quality forecasting
+- Respiratory health tips and protective measures
+
+Always provide practical, evidence-based advice. When AQI is above 100, emphasize caution and protective measures.
+`;
+
 const aiResponses = {
   exercise: `With AQI of ${currentAQI} (Moderate), exercise is possible with precautions:
 • Recommended times: 6am-8am or 6pm-8pm
@@ -61,6 +89,48 @@ function appendBubble(text, me=false){
   b.scrollIntoView({behavior:'smooth', block:'end'});
 }
 
+// Grok AI Integration
+async function callGrokAPI(userMessage) {
+  if (!GROK_CONFIG.enabled || !GROK_CONFIG.apiKey) {
+    return null; // Fall back to local responses
+  }
+
+  try {
+    const response = await fetch(GROK_CONFIG.apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROK_CONFIG.apiKey}`
+      },
+      body: JSON.stringify({
+        model: GROK_CONFIG.model,
+        messages: [
+          {
+            role: 'system',
+            content: AIR_QUALITY_CONTEXT
+          },
+          {
+            role: 'user',
+            content: userMessage
+          }
+        ],
+        max_tokens: 500,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Grok API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || null;
+  } catch (error) {
+    console.error('Grok API call failed:', error);
+    return null; // Fall back to local responses
+  }
+}
+
 function getAIResponse(userMessage) {
   const lowerMessage = userMessage.toLowerCase();
   
@@ -111,15 +181,19 @@ function simulateTyping(callback, delay = 1000) {
   }, delay);
 }
 
-send.addEventListener('click', ()=>{
+send.addEventListener('click', async ()=>{
   const userMessage = msg.value.trim();
   if(!userMessage) return;
   
   appendBubble(userMessage, true);
   msg.value = '';
   
-  simulateTyping(() => {
-    const response = getAIResponse(userMessage);
+  simulateTyping(async () => {
+    // Try Grok AI first, fall back to local responses
+    let response = await callGrokAPI(userMessage);
+    if (!response) {
+      response = getAIResponse(userMessage);
+    }
     appendBubble(response);
   });
 });
@@ -132,14 +206,18 @@ msg.addEventListener('keydown', e=>{
 });
 
 document.querySelectorAll('.quick-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     const action = btn.dataset.action;
     const userMessage = btn.textContent.replace(/[🏃👶🫁📅]/g, '').trim();
     
     appendBubble(userMessage, true);
     
-    simulateTyping(() => {
-      const response = aiResponses[action];
+    simulateTyping(async () => {
+      // Try Grok AI first, fall back to local responses
+      let response = await callGrokAPI(userMessage);
+      if (!response) {
+        response = aiResponses[action];
+      }
       appendBubble(response);
     });
   });
