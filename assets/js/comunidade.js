@@ -90,9 +90,9 @@ function addCommunityReport() {
   if (location && text) {
     const newReport = {
       location: location,
-      time: "Agora",
+      time: "Now",
       text: text,
-      tags: ["Relato", "Comunidade"],
+      tags: ["Report", "Community"],
       type: "neutral"
     };
     
@@ -181,73 +181,72 @@ function showQuizResults() {
   
   alert(message);
   
-  // Reset quiz
   currentQuizQuestion = 0;
   quizScore = 0;
 }
 
 function openGuide(guideTitle) {
   const guides = {
-    'Purificadores de Ar': `
-      <h3>Guia: Purificadores de Ar</h3>
-      <p><strong>Como escolher:</strong></p>
+    'Air Purifiers': `
+      <h3>Guide: Air Purifiers</h3>
+      <p><strong>How to choose:</strong></p>
       <ul>
-        <li>Filtro HEPA para partículas finas</li>
-        <li>CADR adequado ao tamanho do ambiente</li>
-        <li>Filtro de carvão ativado para gases</li>
-        <li>Baixo nível de ruído</li>
+        <li>HEPA filter for fine particles</li>
+        <li>CADR adequate for room size</li>
+        <li>Activated carbon filter for gases</li>
+        <li>Low noise level</li>
       </ul>
-      <p><strong>Como usar:</strong></p>
+      <p><strong>How to use:</strong></p>
       <ul>
-        <li>Mantenha portas e janelas fechadas</li>
-        <li>Troque filtros regularmente</li>
-        <li>Posicione longe de obstáculos</li>
-        <li>Use continuamente em dias ruins</li>
-      </ul>
-    `,
-    'Exercícios Seguros': `
-      <h3>Guia: Exercícios Seguros</h3>
-      <p><strong>Quando evitar:</strong></p>
-      <ul>
-        <li>AQI acima de 100 (Moderado)</li>
-        <li>Horário de pico (10h-16h)</li>
-        <li>Proximidade de vias movimentadas</li>
-      </ul>
-      <p><strong>Alternativas seguras:</strong></p>
-      <ul>
-        <li>Academias com ar condicionado</li>
-        <li>Exercícios indoor</li>
-        <li>Horários matinais ou noturnos</li>
-        <li>Parques arborizados</li>
+        <li>Keep doors and windows closed</li>
+        <li>Replace filters regularly</li>
+        <li>Position away from obstacles</li>
+        <li>Use continuously on bad days</li>
       </ul>
     `,
-    'Plantas Purificadoras': `
-      <h3>Guia: Plantas Purificadoras</h3>
-      <p><strong>Plantas recomendadas:</strong></p>
+    'Safe Exercises': `
+      <h3>Guide: Safe Exercises</h3>
+      <p><strong>When to avoid:</strong></p>
       <ul>
-        <li>Espada-de-São-Jorge - absorve formaldeído</li>
-        <li>Jiboia - remove poluentes do ar</li>
-        <li>Lírio-da-paz - filtra benzeno e amônia</li>
-        <li>Samambaia - umidifica e purifica</li>
+        <li>AQI above 100 (Moderate)</li>
+        <li>Peak hours (10am-4pm)</li>
+        <li>Near busy roads</li>
       </ul>
-      <p><strong>Cuidados:</strong></p>
+      <p><strong>Safe alternatives:</strong></p>
       <ul>
-        <li>Regue regularmente</li>
-        <li>Mantenha folhas limpas</li>
-        <li>Posicione em locais ventilados</li>
-        <li>Combine com purificadores</li>
+        <li>Air-conditioned gyms</li>
+        <li>Indoor exercises</li>
+        <li>Morning or evening hours</li>
+        <li>Tree-filled parks</li>
+      </ul>
+    `,
+    'Air-Purifying Plants': `
+      <h3>Guide: Air-Purifying Plants</h3>
+      <p><strong>Recommended plants:</strong></p>
+      <ul>
+        <li>Snake Plant - absorbs formaldehyde</li>
+        <li>Pothos - removes air pollutants</li>
+        <li>Peace Lily - filters benzene and ammonia</li>
+        <li>Boston Fern - humidifies and purifies</li>
+      </ul>
+      <p><strong>Care:</strong></p>
+      <ul>
+        <li>Water regularly</li>
+        <li>Keep leaves clean</li>
+        <li>Position in ventilated areas</li>
+        <li>Combine with purifiers</li>
       </ul>
     `
   };
   
-  const content = guides[guideTitle] || '<p>Guia não encontrado.</p>';
+  const content = guides[guideTitle] || '<p>Guide not found.</p>';
   
   const modal = document.createElement('div');
   modal.className = 'guide-modal';
   modal.innerHTML = `
     <div class="guide-content">
       ${content}
-      <button class="close-guide">Fechar</button>
+      <button class="close-guide">Close</button>
     </div>
   `;
   
@@ -283,21 +282,20 @@ document.getElementById('rb-community').onclick=()=>window.location.href="comuni
 updateCommunityReports();
 
 setInterval(() => {
-  // Simula novos relatos da comunidade
   if (Math.random() < 0.1) {
-    const locations = ["Bairro Norte", "Centro Comercial", "Praça da Liberdade", "Vila Nova"];
+    const locations = ["North District", "Commercial Center", "Liberty Square", "New Village"];
     const reports = [
-      "Ar mais limpo hoje, boa para caminhada.",
-      "Tráfego intenso na região, evitem exercícios.",
-      "Cheiro de queimada vindo do norte.",
-      "Dia ensolarado, ar fresco da manhã."
+      "Cleaner air today, good for walking.",
+      "Heavy traffic in the area, avoid exercises.",
+      "Smell of burning coming from the north.",
+      "Sunny day, fresh morning air."
     ];
     
     const newReport = {
       location: locations[Math.floor(Math.random() * locations.length)],
-      time: "Agora",
+      time: "Now",
       text: reports[Math.floor(Math.random() * reports.length)],
-      tags: ["Relato", "Comunidade"],
+      tags: ["Report", "Community"],
       type: "neutral"
     };
     

@@ -43,7 +43,6 @@ function getAQICategory(pm25) {
 }
 
 const realCities = [
-  // North America
   { name: 'New York', lat: 40.7128, lon: -74.0060, country: 'USA' },
   { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, country: 'USA' },
   { name: 'Chicago', lat: 41.8781, lon: -87.6298, country: 'USA' },
@@ -53,7 +52,6 @@ const realCities = [
   { name: 'Vancouver', lat: 49.2827, lon: -123.1207, country: 'Canada' },
   { name: 'Mexico City', lat: 19.4326, lon: -99.1332, country: 'Mexico' },
   
-  // South America
   { name: 'São Paulo', lat: -23.5505, lon: -46.6333, country: 'Brazil' },
   { name: 'Rio de Janeiro', lat: -22.9068, lon: -43.1729, country: 'Brazil' },
   { name: 'Brasília', lat: -15.7801, lon: -47.9292, country: 'Brazil' },
@@ -63,7 +61,6 @@ const realCities = [
   { name: 'Santiago', lat: -33.4489, lon: -70.6693, country: 'Chile' },
   { name: 'Bogotá', lat: 4.7110, lon: -74.0721, country: 'Colombia' },
   
-  // Europe
   { name: 'London', lat: 51.5074, lon: -0.1278, country: 'UK' },
   { name: 'Paris', lat: 48.8566, lon: 2.3522, country: 'France' },
   { name: 'Berlin', lat: 52.5200, lon: 13.4050, country: 'Germany' },
@@ -75,7 +72,6 @@ const realCities = [
   { name: 'Moscow', lat: 55.7558, lon: 37.6176, country: 'Russia' },
   { name: 'Istanbul', lat: 41.0082, lon: 28.9784, country: 'Turkey' },
   
-  // Asia
   { name: 'Tokyo', lat: 35.6762, lon: 139.6503, country: 'Japan' },
   { name: 'Beijing', lat: 39.9042, lon: 116.4074, country: 'China' },
   { name: 'Shanghai', lat: 31.2304, lon: 121.4737, country: 'China' },
@@ -87,7 +83,6 @@ const realCities = [
   { name: 'Jakarta', lat: -6.2088, lon: 106.8456, country: 'Indonesia' },
   { name: 'Manila', lat: 14.5995, lon: 120.9842, country: 'Philippines' },
   
-  // Africa & Middle East
   { name: 'Cairo', lat: 30.0444, lon: 31.2357, country: 'Egypt' },
   { name: 'Lagos', lat: 6.5244, lon: 3.3792, country: 'Nigeria' },
   { name: 'Johannesburg', lat: -26.2041, lon: 28.0473, country: 'South Africa' },
@@ -97,7 +92,6 @@ const realCities = [
   { name: 'Riyadh', lat: 24.7136, lon: 46.6753, country: 'Saudi Arabia' },
   { name: 'Tel Aviv', lat: 32.0853, lon: 34.7818, country: 'Israel' },
   
-  // Oceania
   { name: 'Sydney', lat: -33.8688, lon: 151.2093, country: 'Australia' },
   { name: 'Melbourne', lat: -37.8136, lon: 144.9631, country: 'Australia' },
   { name: 'Perth', lat: -31.9505, lon: 115.8605, country: 'Australia' },
@@ -108,7 +102,6 @@ async function fetchRealAirQualityData() {
   const points = [];
   
   try {
-    // Usando OpenAQ API para dados reais
     const response = await fetch('https://api.openaq.org/v2/latest?limit=1000&sort=desc&order_by=lastUpdated');
     const data = await response.json();
     
@@ -147,9 +140,7 @@ async function fetchRealAirQualityData() {
 function generateBackupRealData() {
   const points = [];
   
-  // Data based on approximate real measurements from different cities
   const realAirQualityData = {
-    // North America
     'New York': { pm25: 18, no2: 32, o3: 25, temp: 15, humidity: 55 },
     'Los Angeles': { pm25: 35, no2: 55, o3: 42, temp: 22, humidity: 45 },
     'Chicago': { pm25: 22, no2: 38, o3: 28, temp: 12, humidity: 60 },
@@ -159,7 +150,6 @@ function generateBackupRealData() {
     'Vancouver': { pm25: 12, no2: 25, o3: 18, temp: 15, humidity: 75 },
     'Mexico City': { pm25: 55, no2: 70, o3: 48, temp: 25, humidity: 50 },
     
-    // South America
     'São Paulo': { pm25: 28, no2: 45, o3: 35, temp: 24, humidity: 68 },
     'Rio de Janeiro': { pm25: 22, no2: 38, o3: 28, temp: 26, humidity: 72 },
     'Brasília': { pm25: 15, no2: 25, o3: 20, temp: 28, humidity: 45 },
@@ -169,7 +159,6 @@ function generateBackupRealData() {
     'Santiago': { pm25: 30, no2: 45, o3: 35, temp: 22, humidity: 40 },
     'Bogotá': { pm25: 35, no2: 48, o3: 40, temp: 18, humidity: 65 },
     
-    // Europe
     'London': { pm25: 12, no2: 28, o3: 18, temp: 10, humidity: 75 },
     'Paris': { pm25: 16, no2: 35, o3: 22, temp: 12, humidity: 70 },
     'Berlin': { pm25: 14, no2: 30, o3: 20, temp: 8, humidity: 65 },
@@ -181,7 +170,6 @@ function generateBackupRealData() {
     'Moscow': { pm25: 18, no2: 35, o3: 25, temp: 5, humidity: 60 },
     'Istanbul': { pm25: 35, no2: 55, o3: 42, temp: 18, humidity: 65 },
     
-    // Asia
     'Tokyo': { pm25: 20, no2: 40, o3: 30, temp: 18, humidity: 60 },
     'Beijing': { pm25: 65, no2: 80, o3: 55, temp: 20, humidity: 35 },
     'Shanghai': { pm25: 45, no2: 60, o3: 40, temp: 22, humidity: 70 },
@@ -193,7 +181,6 @@ function generateBackupRealData() {
     'Jakarta': { pm25: 55, no2: 65, o3: 45, temp: 32, humidity: 80 },
     'Manila': { pm25: 48, no2: 60, o3: 42, temp: 32, humidity: 75 },
     
-    // Africa & Middle East
     'Cairo': { pm25: 45, no2: 60, o3: 40, temp: 32, humidity: 25 },
     'Lagos': { pm25: 65, no2: 75, o3: 55, temp: 30, humidity: 80 },
     'Johannesburg': { pm25: 35, no2: 45, o3: 32, temp: 22, humidity: 50 },
@@ -203,7 +190,6 @@ function generateBackupRealData() {
     'Riyadh': { pm25: 65, no2: 80, o3: 55, temp: 38, humidity: 30 },
     'Tel Aviv': { pm25: 32, no2: 45, o3: 35, temp: 25, humidity: 60 },
     
-    // Oceania
     'Sydney': { pm25: 8, no2: 15, o3: 12, temp: 22, humidity: 55 },
     'Melbourne': { pm25: 12, no2: 22, o3: 18, temp: 18, humidity: 65 },
     'Perth': { pm25: 10, no2: 18, o3: 15, temp: 25, humidity: 45 },
@@ -236,27 +222,22 @@ function generateBackupRealData() {
     });
   });
 
-  // Add pollution hotspots (traffic, industrial, fires, dust)
   const hotspots = [
-    // Traffic hotspots
     { lat: 40.7589, lon: -73.9851, type: 'traffic', name: 'Times Square', city: 'New York', intensity: 'high' },
     { lat: 34.0522, lon: -118.2437, type: 'traffic', name: 'Hollywood Blvd', city: 'Los Angeles', intensity: 'high' },
     { lat: 51.5074, lon: -0.1278, type: 'traffic', name: 'Oxford Street', city: 'London', intensity: 'medium' },
     { lat: 48.8566, lon: 2.3522, type: 'traffic', name: 'Champs-Élysées', city: 'Paris', intensity: 'medium' },
     { lat: 35.6762, lon: 139.6503, type: 'traffic', name: 'Shibuya Crossing', city: 'Tokyo', intensity: 'high' },
     
-    // Industrial areas
     { lat: 40.7128, lon: -74.0060, type: 'industrial', name: 'Industrial Zone', city: 'New York', intensity: 'high' },
     { lat: 39.9042, lon: 116.4074, type: 'industrial', name: 'Steel Plant', city: 'Beijing', intensity: 'very_high' },
     { lat: 28.7041, lon: 77.1025, type: 'industrial', name: 'Manufacturing Hub', city: 'Delhi', intensity: 'very_high' },
     { lat: -23.5505, lon: -46.6333, type: 'industrial', name: 'Industrial District', city: 'São Paulo', intensity: 'high' },
     
-    // Fire hotspots (simulated)
     { lat: 34.0522, lon: -118.5000, type: 'fire', name: 'Wildfire Zone', city: 'Los Angeles', intensity: 'very_high' },
     { lat: 38.5816, lon: -121.4944, type: 'fire', name: 'Forest Fire', city: 'Sacramento', intensity: 'high' },
     { lat: -33.8688, lon: 151.2093, type: 'fire', name: 'Bushfire Area', city: 'Sydney', intensity: 'medium' },
     
-    // Dust/sandstorm areas
     { lat: 30.0444, lon: 31.2357, type: 'dust', name: 'Sahara Dust', city: 'Cairo', intensity: 'high' },
     { lat: 25.2048, lon: 55.2708, type: 'dust', name: 'Sandstorm Zone', city: 'Dubai', intensity: 'medium' },
     { lat: 24.7136, lon: 46.6753, type: 'dust', name: 'Desert Dust', city: 'Riyadh', intensity: 'high' }
@@ -294,8 +275,6 @@ function generateBackupRealData() {
 
 async function fetchWeatherData(lat, lon) {
   try {
-    // Usando OpenWeatherMap API (requer chave API)
-    // Para demo, vamos usar dados simulados baseados na localização
     const weatherData = {
       temp: Math.round(20 + Math.random() * 20),
       humidity: Math.round(40 + Math.random() * 40),
@@ -319,7 +298,6 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
   Object.values(mapLayers).forEach(layer => layer.clearLayers());
   const center = map.getCenter();
   
-  // Show loading indicator
   const loadingMarker = L.marker([center.lat, center.lng], {
     icon: L.divIcon({
       html: '<div style="background: #3498db; color: white; padding: 8px; border-radius: 50%; font-size: 12px;">Loading...</div>',
@@ -332,7 +310,6 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
   
   try {
     if (source === 'tempo' || source === 'ground' || source === 'combined') {
-      // Carrega dados reais da OpenAQ API
       points = await fetchRealAirQualityData();
       console.log(`Loaded ${points.length} real data points`);
     } else {
@@ -343,7 +320,6 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
     points = generateBackupRealData();
   }
   
-  // Remove loading indicator
   map.removeLayer(loadingMarker);
   
   const activeLayers = [];
@@ -358,7 +334,7 @@ async function updateMapLayers(source = 'tempo', hoursAgo = 0) {
     if (activeLayers.includes('pm25') && point.pm25) {
       const aqi = getAQICategory(point.pm25);
       const marker = L.circleMarker([point.lat, point.lon], {
-        radius: Math.max(6, Math.min(15, point.pm25 / 5)), // Tamanho baseado na poluição
+        radius: Math.max(6, Math.min(15, point.pm25 / 5)),
         fillColor: aqi.color,
         color: '#000',
         weight: 0.5,

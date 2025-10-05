@@ -63,12 +63,12 @@ function getAQIColor(aqi) {
 }
 
 function getAQIText(aqi) {
-  if (aqi <= 50) return 'Bom';
-  if (aqi <= 100) return 'Moderado';
-  if (aqi <= 150) return 'Insalubre';
-  if (aqi <= 200) return 'Insalubre p/ Sensíveis';
-  if (aqi <= 300) return 'Muito Insalubre';
-  return 'Perigoso';
+  if (aqi <= 50) return 'Good';
+  if (aqi <= 100) return 'Moderate';
+  if (aqi <= 150) return 'Unhealthy';
+  if (aqi <= 200) return 'Unhealthy for Sensitive';
+  if (aqi <= 300) return 'Very Unhealthy';
+  return 'Hazardous';
 }
 
 function updateProfile(profile) {
@@ -85,15 +85,14 @@ function updateProfile(profile) {
 
 async function fetchRealWeatherData() {
   try {
-    // Simulando dados meteorológicos reais baseados em São Paulo
     const weatherData = {
-      temp: 24 + Math.random() * 8, // 24-32°C típico para SP
-      wind: Math.random() * 15 + 5, // 5-20 km/h
-      humidity: 60 + Math.random() * 30, // 60-90% típico
-      rain: Math.random() * 40, // 0-40% chance
-      pressure: 1010 + Math.random() * 20, // Pressão atmosférica
-      uv: Math.random() * 10 + 2, // Índice UV
-      visibility: 8 + Math.random() * 4 // Visibilidade em km
+      temp: 24 + Math.random() * 8,
+      wind: Math.random() * 15 + 5,
+      humidity: 60 + Math.random() * 30,
+      rain: Math.random() * 40,
+      pressure: 1010 + Math.random() * 20,
+      uv: Math.random() * 10 + 2,
+      visibility: 8 + Math.random() * 4
     };
     
     return weatherData;
@@ -119,12 +118,11 @@ async function simulateWeatherData() {
   document.getElementById('humidity').textContent = `${weatherData.humidity.toFixed(0)}%`;
   document.getElementById('rain').textContent = `${weatherData.rain.toFixed(0)}%`;
   
-  // Adicionar informações extras se disponíveis
   const weatherInfo = document.querySelector('.weather-info');
   if (weatherInfo && !document.getElementById('pressure')) {
     weatherInfo.innerHTML += `
       <div class="weather-item">
-        <span>🌡️ Pressão:</span>
+        <span>🌡️ Pressure:</span>
         <span id="pressure">${weatherData.pressure.toFixed(0)} hPa</span>
       </div>
       <div class="weather-item">
@@ -132,7 +130,7 @@ async function simulateWeatherData() {
         <span id="uv">${weatherData.uv.toFixed(1)}</span>
       </div>
       <div class="weather-item">
-        <span>👁️ Visibilidade:</span>
+        <span>👁️ Visibility:</span>
         <span id="visibility">${weatherData.visibility.toFixed(1)} km</span>
       </div>
     `;
@@ -167,7 +165,7 @@ function updateAQIDisplay(aqi) {
 new Chart(document.getElementById('aqiGauge'), {
   type: 'doughnut',
   data: {
-    labels: ['Bom','Moderado','Insalubre'],
+    labels: ['Good','Moderate','Unhealthy'],
     datasets: [{
       data: [40,35,25],
       backgroundColor: ['#2ecc71','#f1c40f','#e74c3c'],
@@ -192,7 +190,7 @@ new Chart(document.getElementById('aqiGauge'), {
 new Chart(document.getElementById('forecastBar'), {
   type:'bar',
   data:{
-    labels:['Seg','Ter','Qua','Qui','Sex','Sab','Dom'],
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
     datasets:[
       {label:'AQI', data:[45,52,38,41,35,28,32], backgroundColor:'#1b676a'}
     ]
@@ -224,7 +222,7 @@ new Chart(document.getElementById('pollutantsChart'), {
   data:{
     labels:['PM2.5','PM10','NO₂','O₃','CO'],
     datasets:[
-      {label:'Concentração (µg/m³)', data:[18,25,12,8,2], backgroundColor:'#22c55e'}
+      {label:'Concentration (µg/m³)', data:[18,25,12,8,2], backgroundColor:'#22c55e'}
     ]
   },
   options:{
@@ -236,13 +234,13 @@ new Chart(document.getElementById('pollutantsChart'), {
         ticks:{ callback:v=>v+' µg/m³' },
         title: {
           display: true,
-          text: 'Concentração'
+          text: 'Concentration'
         }
       },
       x: {
         title: {
           display: true,
-          text: 'Poluentes'
+          text: 'Pollutants'
         }
       }
     }

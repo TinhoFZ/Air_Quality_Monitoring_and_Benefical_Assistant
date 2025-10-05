@@ -1,12 +1,6 @@
-/* Air QMBA – app.js (corrige dados e botões)
- - OpenAQ em tempo real para PM2.5/NO2/O3
- - Gatilhos para futuras camadas NASA TEMPO
- - Botões com navegação para páginas existentes
-*/
 const map = L.map('map', { worldCopyJump:true }).setView([ -14.2, -51.9 ], 4);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap' }).addTo(map);
 
-// geocoder
 if (L.Control && L.Control.geocoder) {
   L.Control.geocoder({ defaultMarkGeocode:true, placeholder:'Buscar local...' })
     .on('markgeocode', (e) => map.fitBounds(e.geocode.bbox))
@@ -37,9 +31,7 @@ function addCircle(lat, lon, value, label){
   return circle;
 }
 
-// ---- OpenAQ ----
 async function fetchOpenAQ(bbox, parameter, hours=0){
-  // bbox: [[south, west], [north, east]]
   const south = bbox.getSouth();
   const west  = bbox.getWest();
   const north = bbox.getNorth();
@@ -54,10 +46,6 @@ async function fetchOpenAQ(bbox, parameter, hours=0){
   return js.results || [];
 }
 
-// ---- NASA TEMPO (placeholder) ----
-// Para ativar, plugue seu endpoint TEMPO aqui e converta para pontos.
-// Exemplo de parse:
-// async function fetchTEMPO(bbox, parameter, hours){ ... return [{lat, lon, value, site, time}] }
 async function fetchTEMPO(){ return []; }
 
 async function updateLayers(){
@@ -67,7 +55,6 @@ async function updateLayers(){
   document.querySelector('#sourceLabel').textContent =
     source === 'openaq' ? 'OpenAQ (provisório)' : 'NASA TEMPO';
 
-  // clear
   Object.values(layers).forEach(l => l.clearLayers());
 
   const bbox = map.getBounds();
@@ -91,7 +78,6 @@ async function updateLayers(){
         addCircle(r.lat, r.lon, p==='pm25'?r.value:null, popup).addTo(layers[p]);
       });
     }
-    // auto-add layer if not visible
     if (!map.hasLayer(layers[p])) layers[p].addTo(map);
   }
 }
@@ -103,7 +89,6 @@ document.querySelectorAll('.layer').forEach(cb => cb.addEventListener('change', 
 document.querySelectorAll('input[name="src"]').forEach(rb => rb.addEventListener('change', updateLayers));
 document.getElementById('btn-reload').addEventListener('click', updateLayers);
 
-// ---- Navegação (corrigida) ----
 document.getElementById('btn-map').onclick = ()=> location.href = 'index.html';
 document.getElementById('btn-dashboard').onclick = ()=> location.href = 'graf.html';
 document.getElementById('btn-ai').onclick = ()=> location.href = 'IA.html';

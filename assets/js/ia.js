@@ -7,32 +7,46 @@ const currentTemp = 24;
 const currentHumidity = 65;
 const currentWind = 8;
 
-// Grok AI Configuration
 const GROK_CONFIG = {
-  apiKey: 'grokToken',
+  apiKey: 'SECRET',
   apiUrl: 'https://api.x.ai/v1/chat/completions',
-  model: 'grok-beta',
-  enabled: true // Now enabled with the provided API key
+  model: 'grok-beta', 
+  enabled: false
 };
 
-// Air Quality Context for Grok
 const AIR_QUALITY_CONTEXT = `
-You are an AI assistant specialized in air quality and respiratory health. You have access to real-time air quality data:
+You are Air QMBA, an AI assistant specialized in air quality and respiratory health. You help users make informed decisions about outdoor activities based on real-time air quality data.
 
-Current Conditions:
-- AQI: ${currentAQI} (Moderate)
+CURRENT CONDITIONS:
+- AQI: ${currentAQI} (Moderate - 51-100 range)
 - Temperature: ${currentTemp}°C
 - Humidity: ${currentHumidity}%
 - Wind Speed: ${currentWind} km/h
 
-Your expertise includes:
+YOUR EXPERTISE:
 - Air quality interpretation and health recommendations
-- Exercise and outdoor activity guidance based on AQI
+- Exercise and outdoor activity guidance based on AQI levels
 - Special considerations for children, elderly, and asthmatics
 - Weather and air quality forecasting
 - Respiratory health tips and protective measures
 
-Always provide practical, evidence-based advice. When AQI is above 100, emphasize caution and protective measures.
+RESPONSE GUIDELINES:
+- Always provide practical, evidence-based advice
+- Be concise but informative (max 3-4 sentences)
+- When AQI is above 100, emphasize caution and protective measures
+- Include specific time recommendations when relevant
+- Mention protective measures like masks when appropriate
+- Respond in the same language as the user's question
+
+AQI SCALE:
+- 0-50: Good (Green) - Safe for all activities
+- 51-100: Moderate (Yellow) - OK for most, sensitive groups should limit prolonged outdoor activity
+- 101-150: Unhealthy for Sensitive Groups (Orange) - Children, elderly, and those with heart/lung disease should avoid prolonged outdoor activity
+- 151-200: Unhealthy (Red) - Everyone should avoid prolonged outdoor activity
+- 201-300: Very Unhealthy (Purple) - Everyone should avoid outdoor activity
+- 301+: Hazardous (Maroon) - Stay indoors
+
+Always be helpful, accurate, and prioritize user safety.
 `;
 
 const aiResponses = {
@@ -89,45 +103,75 @@ function appendBubble(text, me=false){
   b.scrollIntoView({behavior:'smooth', block:'end'});
 }
 
-// Grok AI Integration
 async function callGrokAPI(userMessage) {
   if (!GROK_CONFIG.enabled || !GROK_CONFIG.apiKey) {
-    return null; // Fall back to local responses
+    console.log('Grok API disabled or no API key');
+    return null;
   }
 
   try {
+    console.log('Calling Grok API with message:', userMessage);
+    console.log('API URL:', GROK_CONFIG.apiUrl);
+    console.log('API Key (first 10 chars):', GROK_CONFIG.apiKey.substring(0, 10) + '...');
+    
+    const requestBody = {
+      model: GROK_CONFIG.model,
+      messages: [
+        {
+          role: 'system',
+          content: AIR_QUALITY_CONTEXT
+        },
+        {
+          role: 'user',
+          content: userMessage
+        }
+      ],
+      max_tokens: 500,
+      temperature: 0.7,
+      stream: false
+    };
+    
+    console.log('Request body:', JSON.stringify(requestBody, null, 2));
+    
     const response = await fetch(GROK_CONFIG.apiUrl, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROK_CONFIG.apiKey}`
+        'Authorization': `Bearer ${GROK_CONFIG.apiKey}`,
+        'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        model: GROK_CONFIG.model,
-        messages: [
-          {
-            role: 'system',
-            content: AIR_QUALITY_CONTEXT
-          },
-          {
-            role: 'user',
-            content: userMessage
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.7
-      })
+      body: JSON.stringify(requestBody)
     });
 
+    console.log('Grok API response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      throw new Error(`Grok API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Grok API error response:', errorText);
+      throw new Error(`Grok API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    return data.choices[0]?.message?.content || null;
+    console.log('Grok API response data:', data);
+    
+    const aiResponse = data.choices?.[0]?.message?.content;
+    if (aiResponse) {
+      console.log('✅ Grok AI response received:', aiResponse);
+      return aiResponse;
+    } else {
+      console.error('❌ No content in Grok response:', data);
+      return null;
+    }
   } catch (error) {
-    console.error('Grok API call failed:', error);
-    return null; // Fall back to local responses
+    console.error('❌ Grok API call failed:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    return null;
   }
 }
 
@@ -140,32 +184,59 @@ function getAIResponse(userMessage) {
     }
   }
   
-  if (lowerMessage.includes('ola') || lowerMessage.includes('olá') || lowerMessage.includes('oi')) {
-    return `Hello! I'm the Air QMBA assistant. I can help you with:
-• Exercise recommendations
-• Guidance for children and the elderly
-• Information for asthmatics
-• Weather and air quality forecasts
-• Respiratory health tips
+  if (lowerMessage.includes('ola') || lowerMessage.includes('olá') || lowerMessage.includes('oi') || 
+      lowerMessage.includes('opa') || lowerMessage.includes('e aí') || lowerMessage.includes('eai')) {
+    return `Olá! 👋 Sou o assistente Air QMBA, especializado em qualidade do ar e saúde respiratória. 
 
-How can I help you today?`;
+Posso te ajudar com:
+• Recomendações de exercícios
+• Orientações para crianças e idosos
+• Informações para asmáticos
+• Previsões de qualidade do ar
+• Dicas de saúde respiratória
+
+Como posso te ajudar hoje?`;
   }
   
-  if (lowerMessage.includes('ajuda') || lowerMessage.includes('help')) {
-    return `I can help with air quality information! Try asking:
-• "Can I run today?"
-• "Is it safe for children?"
-• "Recommendations for asthmatics"
-• "Weekly forecast"
-• Or use the quick action buttons above!`;
+  if (lowerMessage.includes('ajuda') || lowerMessage.includes('help') || lowerMessage.includes('o que você faz')) {
+    return `Posso te ajudar com informações sobre qualidade do ar! Tente perguntar:
+• "Posso correr hoje?"
+• "É seguro para crianças?"
+• "Recomendações para asmáticos"
+• "Previsão semanal"
+• Ou use os botões de ação rápida acima!`;
   }
   
-  return `I understand your question about "${userMessage}". Based on current data (AQI: ${currentAQI}, Temp: ${currentTemp}°C, Humidity: ${currentHumidity}%), here are general recommendations:
-• Air quality is moderate
-• Safest times for activities: early morning or evening
-• Stay hydrated
-• Use a mask if you have respiratory sensitivity
-• Consult a doctor if symptoms persist`;
+  if (lowerMessage.includes('tempo') || lowerMessage.includes('clima') || lowerMessage.includes('qualidade do ar')) {
+    return `Com base nos dados atuais:
+• AQI: ${currentAQI} (Moderado)
+• Temperatura: ${currentTemp}°C
+• Umidade: ${currentHumidity}%
+• Vento: ${currentWind} km/h
+
+A qualidade do ar está moderada. Recomendo atividades ao ar livre nas primeiras horas da manhã (6h-8h) ou no final da tarde (18h-20h).`;
+  }
+  
+  if (lowerMessage.includes('saúde') || lowerMessage.includes('respirar') || lowerMessage.includes('pulmão')) {
+    return `Para manter a saúde respiratória com AQI ${currentAQI}:
+• Evite atividades intensas entre 10h-16h
+• Use máscara se tiver sensibilidade respiratória
+• Mantenha-se hidratado
+• Consulte um médico se tiver sintomas persistentes
+• Considere usar um purificador de ar em casa`;
+  }
+  
+  return `Entendo sua pergunta sobre "${userMessage}". 
+
+Com base nos dados atuais (AQI: ${currentAQI}, Temperatura: ${currentTemp}°C, Umidade: ${currentHumidity}%), aqui estão as recomendações gerais:
+
+• A qualidade do ar está moderada
+• Horários mais seguros para atividades: de manhã cedo ou à noite
+• Mantenha-se hidratado
+• Use máscara se tiver sensibilidade respiratória
+• Consulte um médico se os sintomas persistirem
+
+Posso te ajudar com informações mais específicas sobre exercícios, crianças, asmáticos ou previsões!`;
 }
 
 function simulateTyping(callback, delay = 1000) {
@@ -181,6 +252,23 @@ function simulateTyping(callback, delay = 1000) {
   }, delay);
 }
 
+async function testAPIConnection() {
+  console.log('Testing Grok API connection...');
+  try {
+    const testResponse = await callGrokAPI('Hello, are you working?');
+    if (testResponse) {
+      console.log('✅ Grok API is working correctly');
+      return true;
+    } else {
+      console.log('⚠️ Grok API not responding, using local responses');
+      return false;
+    }
+  } catch (error) {
+    console.log('❌ Grok API connection failed:', error);
+    return false;
+  }
+}
+
 send.addEventListener('click', async ()=>{
   const userMessage = msg.value.trim();
   if(!userMessage) return;
@@ -189,11 +277,18 @@ send.addEventListener('click', async ()=>{
   msg.value = '';
   
   simulateTyping(async () => {
+    console.log('Processing message:', userMessage);
+    
     // Try Grok AI first, fall back to local responses
     let response = await callGrokAPI(userMessage);
+    console.log('Grok API response:', response);
+    
     if (!response) {
+      console.log('Using local fallback response');
       response = getAIResponse(userMessage);
     }
+    
+    console.log('Final response:', response);
     appendBubble(response);
   });
 });
@@ -213,7 +308,6 @@ document.querySelectorAll('.quick-btn').forEach(btn => {
     appendBubble(userMessage, true);
     
     simulateTyping(async () => {
-      // Try Grok AI first, fall back to local responses
       let response = await callGrokAPI(userMessage);
       if (!response) {
         response = aiResponses[action];
@@ -223,26 +317,31 @@ document.querySelectorAll('.quick-btn').forEach(btn => {
   });
 });
 
-document.getElementById('rb-locate').addEventListener('click', ()=>{
-  if(!navigator.geolocation){
-    appendBubble('Geolocalização indisponível no seu navegador.');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const {latitude, longitude} = pos.coords;
-      appendBubble(`📍 Localização detectada: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}. Analisando dados de qualidade do ar para sua região...`);
-      
-      setTimeout(() => {
-        appendBubble(`Com base na sua localização, a qualidade do ar atual é moderada (AQI: 45). Recomendo verificar o mapa interativo para dados mais detalhados da sua região.`);
-      }, 1500);
-    },
-    () => appendBubble('Não consegui obter sua localização. Verifique as permissões do navegador.')
-  );
-});
+const rbLocate = document.getElementById('rb-locate');
+if (rbLocate) {
+  rbLocate.addEventListener('click', ()=>{
+    if(!navigator.geolocation){
+      appendBubble('Geolocalização indisponível no seu navegador.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const {latitude, longitude} = pos.coords;
+        appendBubble(`📍 Localização detectada: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}. Analisando dados de qualidade do ar para sua região...`);
+        
+        setTimeout(() => {
+          appendBubble(`Com base na sua localização, a qualidade do ar atual é moderada (AQI: 45). Recomendo verificar o mapa interativo para dados mais detalhados da sua região.`);
+        }, 1500);
+      },
+      () => appendBubble('Não consegui obter sua localização. Verifique as permissões do navegador.')
+    );
+  });
+}
 
-document.getElementById('rb-info').addEventListener('click', ()=>{
-  appendBubble(`📊 Informações sobre AQI (Índice de Qualidade do Ar):
+const rbInfo = document.getElementById('rb-info');
+if (rbInfo) {
+  rbInfo.addEventListener('click', ()=>{
+    appendBubble(`📊 Informações sobre AQI (Índice de Qualidade do Ar):
 • 0-50: Bom (verde) - Qualidade satisfatória
 • 51-100: Moderado (amarelo) - Aceitável para maioria
 • 101-150: Insalubre para sensíveis (laranja) - Crianças, idosos, asmáticos
@@ -251,28 +350,51 @@ document.getElementById('rb-info').addEventListener('click', ()=>{
 • 301+: Perigoso (marrom) - Emergência de saúde
 
 Dados baseados em padrões EPA/OMS.`);
+  });
+}
+
+const rbBot = document.getElementById('rb-bot');
+if (rbBot) {
+  rbBot.addEventListener('click', ()=>{
+    appendBubble(`🤖 Sou o assistente Air QMBA, especializado em qualidade do ar e saúde respiratória. Posso te ajudar com recomendações personalizadas baseadas em dados científicos da NASA TEMPO e sensores terrestres.`);
+  });
+}
+
+const rbMap = document.getElementById('rb-map');
+if (rbMap) {
+  rbMap.onclick = () => {
+    window.location.href = "index.html";
+  };
+}
+
+const rbDashboard = document.getElementById('rb-dashboard');
+if (rbDashboard) {
+  rbDashboard.onclick = () => {
+    window.location.href = "graf.html";
+  };
+}
+
+const rbAi = document.getElementById('rb-ai');
+if (rbAi) {
+  rbAi.onclick = () => {
+    window.location.href = "IA.html";
+  };
+}
+
+const rbHistory = document.getElementById('rb-history');
+if (rbHistory) {
+  rbHistory.onclick = () => {
+    window.location.href = "historico.html";
+  };
+}
+
+const rbCommunity = document.getElementById('rb-community');
+if (rbCommunity) {
+  rbCommunity.onclick = () => {
+    window.location.href = "comunidade.html";
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  testAPIConnection();
 });
-
-document.getElementById('rb-bot').addEventListener('click', ()=>{
-  appendBubble(`🤖 Sou o assistente Air QMBA, especializado em qualidade do ar e saúde respiratória. Posso te ajudar com recomendações personalizadas baseadas em dados científicos da NASA TEMPO e sensores terrestres.`);
-});
-
-document.getElementById('rb-map').onclick = () => {
-  window.location.href = "index.html";
-};
-
-document.getElementById('rb-dashboard').onclick = () => {
-  window.location.href = "graf.html";
-};
-
-document.getElementById('rb-ai').onclick = () => {
-  window.location.href = "IA.html";
-};
-
-document.getElementById('rb-history').onclick = () => {
-  window.location.href = "historico.html";
-};
-
-document.getElementById('rb-community').onclick = () => {
-  window.location.href = "comunidade.html";
-};
