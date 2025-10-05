@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Air QMBA — Global Air Map</title>
+<link rel="icon" href="logo.png">
 
 <link rel="stylesheet"
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -87,6 +88,13 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+<script>
+  // Configure proxies to avoid CORS
+  window.OPENAQ_PROXY = window.OPENAQ_PROXY || 'http://localhost:3000/openaq';
+  window.TEMPO_API_URL = window.TEMPO_API_URL || 'http://localhost:3000/s5p';
+  window.AIRNOW_URL = window.AIRNOW_URL || 'http://localhost:3000/airnow';
+  console.log('Config:', { OPENAQ_PROXY: window.OPENAQ_PROXY, TEMPO_API_URL: window.TEMPO_API_URL, AIRNOW_URL: window.AIRNOW_URL });
+}</script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

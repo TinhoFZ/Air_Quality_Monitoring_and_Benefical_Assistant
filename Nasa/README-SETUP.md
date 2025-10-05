@@ -80,3 +80,4 @@ Se retornar JSON com pontos, a chave está OK. Podemos ligar o uso do AirNow no 
 - Performance: implemente cache por bbox+intervalo no backend (opcional) para /s5p.
 
 
+

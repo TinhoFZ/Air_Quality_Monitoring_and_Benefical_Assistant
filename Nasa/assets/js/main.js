@@ -124,7 +124,7 @@ async function fetchRealAirQualityData() {
 
   // Buscar por parâmetro e mesclar por local (lat/lon+station)
   const byKey = new Map();
-  const OPENAQ_PROXY = window.OPENAQ_PROXY || '';
+  const OPENAQ_PROXY = window.OPENAQ_PROXY || 'http://localhost:3000/openaq';
   for (const parameter of wanted) {
     const qs = `date_from=${encodeURIComponent(since)}&parameter=${parameter}&limit=1000&sort=desc&order_by=datetime&bbox=${west},${south},${east},${north}`;
     const url = OPENAQ_PROXY
@@ -569,7 +569,7 @@ document.querySelectorAll('input[name="source"]').forEach(radio => {
   });
 });
 
-document.querySelectorAll('#pm25, #no2, #o3, #temp, #humidity, #wind').forEach(checkbox => {
+document.querySelectorAll('#pm25, #no2, #o3, #ch2o, #temp, #humidity, #wind').forEach(checkbox => {
   checkbox.addEventListener('change', async () => {
     const hours = parseInt(document.getElementById('timeline').value);
     const source = document.querySelector('input[name="source"]:checked').value;
@@ -577,7 +577,8 @@ document.querySelectorAll('#pm25, #no2, #o3, #temp, #humidity, #wind').forEach(c
   });
 });
 
-document.getElementById('btn-locate').onclick = () => {
+const btnLocate = document.getElementById('btn-locate');
+if (btnLocate) btnLocate.onclick = () => {
   if(!navigator.geolocation){
     alert('Geolocation not supported by your browser.');
     return;
@@ -604,7 +605,7 @@ const btnComm = document.getElementById('btn-community');
 if (btnComm) btnComm.onclick = () => { window.location.href = "comunidade.html"; };
 
 map.whenReady(async () => {
-  await updateMapLayers('tempo', 0);
+  await updateMapLayers('ground', 0);
 });
 
 map.on('moveend', async () => {
